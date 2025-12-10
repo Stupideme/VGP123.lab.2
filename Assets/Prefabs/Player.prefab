@@ -157,7 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 8
   initalPowerUpTimer: 5
-  jumpForce: 7
+  jumpForce: 8
   groundCheckRadius: 0.2
 --- !u!95 &7300895643464175679
 Animator:
