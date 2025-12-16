@@ -1,3 +1,4 @@
+using System.Diagnostics.Tracing;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,6 +8,8 @@ public class GameManager : MonoBehaviour
     //Signature that defines the delegate type - delegates are like function pointers
     public delegate void PlayerInstanceDelegate(PlayerController playerInstance);
     public event PlayerInstanceDelegate OnPlayerSpawned;
+
+    public event System.Action<int> OnLifeValueChanged;
 
     #region Singleton Pattern
     private static GameManager _instance;
@@ -35,21 +38,25 @@ public class GameManager : MonoBehaviour
             if (value < 0)
             {
                 GameOver();
-                return;
             }
-
-            if (lives > value)
+            else if (value < _lives)
             {
                Respawn();
                _lives = value;
             }
-
-            if (value > maxLives)
+            else if (value > maxLives)
             {
                 _lives = maxLives;
             }
+            else
+            {
+                _lives = value;
+            }
 
             Debug.Log($"Life value has changed to {_lives}");
+
+            OnLifeValueChanged?.Invoke(_lives);
+            //some event to notify listeners that lives have changed?
         }
     }
     private void GameOver()
@@ -58,7 +65,8 @@ public class GameManager : MonoBehaviour
     }
     private void Respawn()
     {
-        playerInstance.transform.position = currentCheckpoint;
+        if (playerInstance != null)
+            playerInstance.transform.position = currentCheckpoint;
     }
     #endregion
 
@@ -70,7 +78,6 @@ public class GameManager : MonoBehaviour
     #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-
 
     // Update is called once per frame
     void Update()
